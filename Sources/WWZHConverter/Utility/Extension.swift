@@ -1,8 +1,8 @@
 //
 //  Extension.swift
-//  Example
+//  WWZHConverter
 //
-//  Created by iOS on 2024/7/22.
+//  Created by William.Weng on 2024/7/22.
 //
 
 import Foundation

@@ -1,8 +1,8 @@
 //
 //  Constant.swift
-//  Example
+//  WWZHConverter
 //
-//  Created by William.Weng on 2024/1/1.
+//  Created by William.Weng on 2024/7/22.
 //
 
 import UIKit

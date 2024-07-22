@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "wwnetworking",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/William-Weng/WWNetworking.git",
+      "state" : {
+        "revision" : "cad6323f8ec5b7fe87ac4c0e820c0529d402e5e1",
+        "version" : "1.6.2"
+      }
+    },
+    {
+      "identity" : "wwzhconverter",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/William-Weng/WWZHConverter",
+      "state" : {
+        "branch" : "main",
+        "revision" : "3840f6a8dccfdf19ccd36300a3780825897166ff"
+      }
+    }
+  ],
+  "version" : 2
+}
