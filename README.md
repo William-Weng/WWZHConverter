@@ -44,7 +44,7 @@ final class ViewController: UIViewController {
     @IBAction func convertToHK(_ sender: UIBarButtonItem) {
         
         convert(text: twLabel.text, type: .Hongkong) { text in
-            DispatchQueue.main.async { self.cnLabel.text = text }
+            DispatchQueue.main.async { self.hkLabel.text = text }
         }
     }
     
