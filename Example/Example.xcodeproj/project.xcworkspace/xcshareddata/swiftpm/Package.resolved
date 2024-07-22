@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/William-Weng/WWZHConverter",
       "state" : {
-        "branch" : "main",
-        "revision" : "3840f6a8dccfdf19ccd36300a3780825897166ff"
+        "revision" : "9ad64de6d875f9f8801b377ffebd12ec6fbea218",
+        "version" : "1.0.0"
       }
     }
   ],
