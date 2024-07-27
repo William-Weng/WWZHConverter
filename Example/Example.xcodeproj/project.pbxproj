@@ -12,6 +12,7 @@
 		3DBCD87B26F198EF00522E3B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3DBCD87926F198EF00522E3B /* Main.storyboard */; };
 		3DBCD87D26F198F300522E3B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3DBCD87C26F198F300522E3B /* Assets.xcassets */; };
 		3DBCD88026F198F300522E3B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3DBCD87E26F198F300522E3B /* LaunchScreen.storyboard */; };
+		645CD0492C54764D000A4FF5 /* MainActor.png in Resources */ = {isa = PBXBuildFile; fileRef = 645CD0482C54764D000A4FF5 /* MainActor.png */; };
 		8170848D2C4E3AC000F891C9 /* WWZHConverter in Frameworks */ = {isa = PBXBuildFile; productRef = 8170848C2C4E3AC000F891C9 /* WWZHConverter */; };
 		81B4DF2D2C4E48CF00285A8F /* WWZHConverter in Frameworks */ = {isa = PBXBuildFile; productRef = 81B4DF2C2C4E48CF00285A8F /* WWZHConverter */; };
 /* End PBXBuildFile section */
@@ -24,6 +25,7 @@
 		3DBCD87C26F198F300522E3B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3DBCD87F26F198F300522E3B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3DBCD88126F198F300522E3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		645CD0482C54764D000A4FF5 /* MainActor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MainActor.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 		3DBCD88726F1992200522E3B /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				645CD0482C54764D000A4FF5 /* MainActor.png */,
 				3DBCD87726F198EF00522E3B /* ViewController.swift */,
 			);
 			path = ViewController;
@@ -174,6 +177,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3DBCD88026F198F300522E3B /* LaunchScreen.storyboard in Resources */,
+				645CD0492C54764D000A4FF5 /* MainActor.png in Resources */,
 				3DBCD87D26F198F300522E3B /* Assets.xcassets in Resources */,
 				3DBCD87B26F198EF00522E3B /* Main.storyboard in Resources */,
 			);
