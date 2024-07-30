@@ -14,7 +14,7 @@ final class ViewController: UIViewController {
     @IBOutlet weak var twLabel: UILabel!
     @IBOutlet weak var cnLabel: UILabel!
     @IBOutlet weak var hkLabel: UILabel!
-    
+        
     @IBAction func convertToChain(_ sender: UIBarButtonItem) {
         
         convert(text: twLabel.text, type: .China) { text in
@@ -25,7 +25,7 @@ final class ViewController: UIViewController {
     @IBAction func convertToHK(_ sender: UIBarButtonItem) {
         
         convert(text: twLabel.text, type: .Hongkong) { text in
-            Task { await MainActor.run { self.cnLabel.text = text }}
+            Task { await MainActor.run { self.hkLabel.text = text }}
         }
     }
     

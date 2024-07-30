@@ -19,8 +19,8 @@ dependencies: [
 |函式|說明|
 |-|-|
 |serviceInfo(result:)|取得API的相關資訊|
-|convertText(_:to:result:)|文字轉換 (文字部分)|
-|convert(text:to:result:)|文字轉換 (完整資訊)|
+|convertText(_:to:replaces:result:)|文字轉換 (文字部分)|
+|convert(text:to:replaces:result:)|文字轉換 (完整資訊)|
 
 ## Example
 ```swift

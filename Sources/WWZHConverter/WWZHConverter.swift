@@ -11,7 +11,7 @@ import WWNetworking
 // MARK: - 兩岸三地用語轉換 (感謝「繁化姬」作者)
 open class WWZHConverter {
     
-    /// 能轉換的類型
+    /// [轉換的類型](https://docs.zhconvert.org/api/convert/)
     public enum ConverterType {
         
         case Simplified             // 簡體化
@@ -24,6 +24,31 @@ open class WWZHConverter {
         case Mars                   // 火星文化
         case WikiSimplified         // 維基簡體化
         case WikiTraditional        // 維基繁體化
+    }
+    
+    /// [自訂取代](https://filmora.wondershare.tw/animated-video/top-websites-to-download-anime-subtitles-for-free.html)
+    public enum ReplaceType {
+        
+        case modules(_ dictionary: [String: Int])                   // 強制設定模組啟用／停用
+        case userPostReplace(_ dictionary: [String: String])        // 轉換後再進行的額外取代
+        case userPreReplace(_ dictionary: [String: String])         // 轉換前先進行的額外取代
+        case userProtectReplace(_ dictionary: [String: String])     // 保護字詞不被繁化姬修改
+        
+        /// 轉換成可用的參數型
+        /// - Returns: String?
+        func paramater() -> String? {
+            
+            var paramater: String?
+            
+            switch self {
+            case .modules(let dictionary): paramater = dictionary._jsonString(options: .fragmentsAllowed)
+            case .userPostReplace(let dictionary): paramater = dictionary._queryString(separator: "\n")
+            case .userPreReplace(let dictionary): paramater = dictionary._queryString(separator: "\n")
+            case .userProtectReplace(let dictionary): paramater = dictionary._queryString(separator: "\n")
+            }
+            
+            return paramater
+        }
     }
     
     /// 自定義錯誤
@@ -61,10 +86,11 @@ public extension WWZHConverter {
     /// - Parameters:
     ///   - text: String
     ///   - converterType: Constant.ConverterType
+    ///   - replaces: [ReplaceType]?
     ///   - result: (Result<String, Error>) -> Void
-    func convertText(_ text: String, to converterType: ConverterType, result: @escaping (Result<String, Error>) -> Void) {
+    func convertText(_ text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, result: @escaping (Result<String, Error>) -> Void) {
         
-        convert(text: text, to: converterType) { convertResult in
+        convert(text: text, to: converterType, replaces: replaces) { convertResult in
             
             switch convertResult {
             case .failure(let error): result(.failure(error))
@@ -86,12 +112,27 @@ public extension WWZHConverter {
     /// - Parameters:
     ///   - text: 文字
     ///   - converterType: 要轉換成什麼語言類型
-    func convert(text: String, to converterType: ConverterType, result: @escaping (Result<Data?, Error>) -> Void) {
+    ///   - replaces: 自訂取代文字
+    ///   - result: (Result<Data?, Error>) -> Void
+    func convert(text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, result: @escaping (Result<Data?, Error>) -> Void) {
         
-        let parameter: [String: Any] = [
+        var parameter: [String: Any] = [
             "text": text,
             "converter": "\(converterType)"
         ]
+        
+        if let replaces = replaces {
+            
+            replaces.forEach { replace in
+                
+                switch replace {
+                case .modules(_): if let paramater = replace.paramater() { parameter["modules"] = replace.paramater() }
+                case .userPostReplace(_): if let paramater = replace.paramater() { parameter["userPostReplace"] = replace.paramater() }
+                case .userPreReplace(_): if let paramater = replace.paramater() { parameter["userPreReplace"] = replace.paramater() }
+                case .userProtectReplace(_): if let paramater = replace.paramater() { parameter["userProtectReplace"] = replace.paramater() }
+                }
+            }
+        }
         
         _ = WWNetworking.shared.request(httpMethod: .POST, urlString: Constant.API.convert.url(), httpBodyType: .dictionary(parameter)) { [weak self] httpResult in
             

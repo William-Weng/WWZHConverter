@@ -14,7 +14,8 @@
 		3DBCD88026F198F300522E3B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3DBCD87E26F198F300522E3B /* LaunchScreen.storyboard */; };
 		645CD0492C54764D000A4FF5 /* MainActor.png in Resources */ = {isa = PBXBuildFile; fileRef = 645CD0482C54764D000A4FF5 /* MainActor.png */; };
 		8170848D2C4E3AC000F891C9 /* WWZHConverter in Frameworks */ = {isa = PBXBuildFile; productRef = 8170848C2C4E3AC000F891C9 /* WWZHConverter */; };
-		81B4DF2D2C4E48CF00285A8F /* WWZHConverter in Frameworks */ = {isa = PBXBuildFile; productRef = 81B4DF2C2C4E48CF00285A8F /* WWZHConverter */; };
+		81AF86912C587B5000013F45 /* WWZHConverter in Frameworks */ = {isa = PBXBuildFile; productRef = 81AF86902C587B5000013F45 /* WWZHConverter */; };
+		81AF86942C58939000013F45 /* WWZHConverter in Frameworks */ = {isa = PBXBuildFile; productRef = 81AF86932C58939000013F45 /* WWZHConverter */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,7 +35,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8170848D2C4E3AC000F891C9 /* WWZHConverter in Frameworks */,
-				81B4DF2D2C4E48CF00285A8F /* WWZHConverter in Frameworks */,
+				81AF86942C58939000013F45 /* WWZHConverter in Frameworks */,
+				81AF86912C587B5000013F45 /* WWZHConverter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,7 +64,6 @@
 			children = (
 				3DBCD88A26F1995100522E3B /* Setting */,
 				3DBCD88926F1994500522E3B /* Material */,
-				8130038E27D5D17800436128 /* Utility */,
 				3DBCD88826F1993200522E3B /* Storyboard */,
 				3DBCD88726F1992200522E3B /* ViewController */,
 				3DBCD87326F198EF00522E3B /* AppDelegate.swift */,
@@ -104,13 +105,6 @@
 			name = Setting;
 			sourceTree = "<group>";
 		};
-		8130038E27D5D17800436128 /* Utility */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Utility;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -129,7 +123,8 @@
 			name = Example;
 			packageProductDependencies = (
 				8170848C2C4E3AC000F891C9 /* WWZHConverter */,
-				81B4DF2C2C4E48CF00285A8F /* WWZHConverter */,
+				81AF86902C587B5000013F45 /* WWZHConverter */,
+				81AF86932C58939000013F45 /* WWZHConverter */,
 			);
 			productName = Example;
 			productReference = 3DBCD87026F198EF00522E3B /* Example.app */;
@@ -160,7 +155,7 @@
 			);
 			mainGroup = 3DBCD86726F198EF00522E3B;
 			packageReferences = (
-				81B4DF2B2C4E48CF00285A8F /* XCRemoteSwiftPackageReference "WWZHConverter" */,
+				81AF86922C58939000013F45 /* XCRemoteSwiftPackageReference "WWZHConverter" */,
 			);
 			productRefGroup = 3DBCD87126F198EF00522E3B /* Products */;
 			projectDirPath = "";
@@ -403,7 +398,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		81B4DF2B2C4E48CF00285A8F /* XCRemoteSwiftPackageReference "WWZHConverter" */ = {
+		81AF86922C58939000013F45 /* XCRemoteSwiftPackageReference "WWZHConverter" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/William-Weng/WWZHConverter";
 			requirement = {
@@ -418,9 +413,13 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = WWZHConverter;
 		};
-		81B4DF2C2C4E48CF00285A8F /* WWZHConverter */ = {
+		81AF86902C587B5000013F45 /* WWZHConverter */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 81B4DF2B2C4E48CF00285A8F /* XCRemoteSwiftPackageReference "WWZHConverter" */;
+			productName = WWZHConverter;
+		};
+		81AF86932C58939000013F45 /* WWZHConverter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 81AF86922C58939000013F45 /* XCRemoteSwiftPackageReference "WWZHConverter" */;
 			productName = WWZHConverter;
 		};
 /* End XCSwiftPackageProductDependency section */
