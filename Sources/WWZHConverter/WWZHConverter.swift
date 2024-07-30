@@ -11,6 +11,14 @@ import WWNetworking
 // MARK: - 兩岸三地用語轉換 (感謝「繁化姬」作者)
 open class WWZHConverter {
     
+    public static let shared = WWZHConverter()
+            
+    private init() {}
+}
+
+// MARK: - enum
+extension WWZHConverter {
+    
     /// [轉換的類型](https://docs.zhconvert.org/api/convert/)
     public enum ConverterType {
         
@@ -51,6 +59,28 @@ open class WWZHConverter {
         }
     }
     
+    /// 差異比較
+    public enum DifferentType {
+        
+        case diffCharLevel(_ isEnable: Bool)                        // 是否使用字元級別的差異比較
+        case diffContextLines(_ lines: Int)                         // 所輸出的結果要包含多少行上下文 (0 ~ 4)
+        case diffEnable(_ isEnable: Bool)                           // 是否要啟用差異比較
+        case diffIgnoreCase(_ isEnable: Bool)                       // 是否要忽略英文大小寫的差異
+        case diffIgnoreWhiteSpaces(_ isIgnore: Bool)                // 是否要忽略空格的差異
+        case diffTemplate(_ template: TemplateType)                 // 所要使用的輸出模板
+    }
+    
+    /// 輸出模板
+    public enum TemplateType: String {
+        
+        case Inline
+        case SideBySide
+        case Unified
+        case Context
+        case JsonHtml
+        case JsonText
+    }
+    
     /// 自定義錯誤
     public enum ConvertError: Error {
         
@@ -58,10 +88,6 @@ open class WWZHConverter {
         case jsonObject             // JSON轉換錯誤
         case unknown                // 未知錯誤
     }
-    
-    public static let shared = WWZHConverter()
-            
-    private init() {}
 }
 
 // MARK: - 公開工具
@@ -87,10 +113,11 @@ public extension WWZHConverter {
     ///   - text: String
     ///   - converterType: Constant.ConverterType
     ///   - replaces: [ReplaceType]?
+    ///   - differents: [DifferentType]?
     ///   - result: (Result<String, Error>) -> Void
-    func convertText(_ text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, result: @escaping (Result<String, Error>) -> Void) {
+    func convertText(_ text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, result: @escaping (Result<String, Error>) -> Void) {
         
-        convert(text: text, to: converterType, replaces: replaces) { convertResult in
+        convert(text: text, to: converterType, replaces: replaces, differents: differents) { convertResult in
             
             switch convertResult {
             case .failure(let error): result(.failure(error))
@@ -113,26 +140,17 @@ public extension WWZHConverter {
     ///   - text: 文字
     ///   - converterType: 要轉換成什麼語言類型
     ///   - replaces: 自訂取代文字
+    ///   - differents: 文字差異比較
     ///   - result: (Result<Data?, Error>) -> Void
-    func convert(text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, result: @escaping (Result<Data?, Error>) -> Void) {
+    func convert(text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, result: @escaping (Result<Data?, Error>) -> Void) {
         
         var parameter: [String: Any] = [
             "text": text,
             "converter": "\(converterType)"
         ]
         
-        if let replaces = replaces {
-            
-            replaces.forEach { replace in
-                
-                switch replace {
-                case .modules(_): if let paramater = replace.paramater() { parameter["modules"] = replace.paramater() }
-                case .userPostReplace(_): if let paramater = replace.paramater() { parameter["userPostReplace"] = replace.paramater() }
-                case .userPreReplace(_): if let paramater = replace.paramater() { parameter["userPreReplace"] = replace.paramater() }
-                case .userProtectReplace(_): if let paramater = replace.paramater() { parameter["userProtectReplace"] = replace.paramater() }
-                }
-            }
-        }
+        parseReplaceTypes(replaces, parameter: &parameter)
+        parseDifferentTypes(differents, parameter: &parameter)
         
         _ = WWNetworking.shared.request(httpMethod: .POST, urlString: Constant.API.convert.url(), httpBodyType: .dictionary(parameter)) { [weak self] httpResult in
             
@@ -149,7 +167,7 @@ public extension WWZHConverter {
 // MARK: - 小工具
 private extension WWZHConverter {
     
-    /// 解析回傳的Http回應
+    /// 解析回傳的Http回應 (200)
     /// - Parameter result: Result<WWNetworking.ResponseInformation, Error>
     /// - Returns: Result<Data?, Error>
     func parseHtttpResult(_ result: Result<WWNetworking.ResponseInformation, Error>) -> Result<Data?, Error> {
@@ -166,6 +184,46 @@ private extension WWZHConverter {
             
             if (statusCode != 200) { return .failure(ConvertError.httpCode(statusCode)) }
             return .success(data)
+        }
+    }
+    
+    /// 解析自訂取代文字參數
+    /// - Parameters:
+    ///   - replaces: [ReplaceType]?
+    ///   - parameter: inout [String: Any]
+    func parseReplaceTypes(_ replaces: [ReplaceType]?, parameter: inout [String: Any]) {
+        
+        guard let replaces = replaces else { return }
+        
+        replaces.forEach { replace in
+            
+            switch replace {
+            case .modules(_): if let paramater = replace.paramater() { parameter["modules"] = replace.paramater() }
+            case .userPostReplace(_): if let paramater = replace.paramater() { parameter["userPostReplace"] = replace.paramater() }
+            case .userPreReplace(_): if let paramater = replace.paramater() { parameter["userPreReplace"] = replace.paramater() }
+            case .userProtectReplace(_): if let paramater = replace.paramater() { parameter["userProtectReplace"] = replace.paramater() }
+            }
+        }
+    }
+    
+    /// 解析文字差異比較
+    /// - Parameters:
+    ///   - differents: [DifferentType]?
+    ///   - parameter: inout [String: Any]
+    func parseDifferentTypes(_ differents: [DifferentType]?, parameter: inout [String: Any]) {
+        
+        guard let differents = differents else { return }
+        
+        differents.forEach { different in
+            
+            switch different {
+            case .diffCharLevel(let isEnable): parameter["diffCharLevel"] = isEnable
+            case .diffContextLines(let lines): parameter["diffContextLines"] = lines
+            case .diffEnable(let isEnable): parameter["diffEnable"] = isEnable
+            case .diffIgnoreCase(let isIgnore): parameter["diffIgnoreCase"] = isIgnore
+            case .diffIgnoreWhiteSpaces(let isEnable): parameter["diffIgnoreWhiteSpaces"] = isEnable
+            case .diffTemplate(let template): parameter["diffTemplate"] = template.rawValue
+            }
         }
     }
 }
