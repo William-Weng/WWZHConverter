@@ -34,6 +34,22 @@ extension WWZHConverter {
         case WikiTraditional                                        // 維基繁體化
     }
     
+    /// 日文的處理策略
+    public enum JapaneseConversionStrategy {
+        
+        case style(_ style: ConversionStrategy)                     // 對於日文樣式該如何處理
+        case text(_ text: ConversionStrategy)                       // 對於繁化姬自己發現的日文區域該如何處理
+    }
+    
+    /// 處理策略
+    public enum ConversionStrategy: String {
+        
+        case none                                                   // 無（當成中文處理）
+        case protect                                                // 保護
+        case protectOnlySameOrigin                                  // 僅保護原文與日文相同的字
+        case fix                                                    // 修正
+    }
+    
     /// 輸出模板
     public enum TemplateType: String {
         
@@ -125,10 +141,11 @@ public extension WWZHConverter {
     ///   - replaces: [ReplaceType]?
     ///   - differents: [DifferentType]?
     ///   - texts: [TextType]?
+    ///   - strategies: [JapaneseConversionStrategy]?
     ///   - result: (Result<String, Error>) -> Void
-    func convertText(_ text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, result: @escaping (Result<String, Error>) -> Void) {
+    func convertText(_ text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, strategies: [JapaneseConversionStrategy]? = nil, result: @escaping (Result<String, Error>) -> Void) {
         
-        convert(text: text, to: converterType, replaces: replaces, differents: differents, texts: texts) { convertResult in
+        convert(text: text, to: converterType, replaces: replaces, differents: differents, texts: texts, strategies: strategies) { convertResult in
             
             switch convertResult {
             case .failure(let error): result(.failure(error))
@@ -153,8 +170,9 @@ public extension WWZHConverter {
     ///   - replaces: 自訂取代文字
     ///   - differents: 文字差異比較
     ///   - texts: 文本整理
+    ///   - strategies: 日文的處理策略
     ///   - result: (Result<Data?, Error>) -> Void
-    func convert(text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, result: @escaping (Result<Data?, Error>) -> Void) {
+    func convert(text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, strategies: [JapaneseConversionStrategy]? = nil, result: @escaping (Result<Data?, Error>) -> Void) {
         
         var parameter: [String: Any] = [
             "text": text,
@@ -164,6 +182,7 @@ public extension WWZHConverter {
         parseReplaceTypes(replaces, parameter: &parameter)
         parseDifferentTypes(differents, parameter: &parameter)
         parseTextTypes(texts, parameter: &parameter)
+        parseConversionStrategies(strategies, parameter: &parameter)
         
         _ = WWNetworking.shared.request(httpMethod: .POST, urlString: Constant.API.convert.url(), httpBodyType: .dictionary(parameter)) { [weak self] httpResult in
             
@@ -256,6 +275,23 @@ private extension WWZHConverter {
             case .translateTabsToSpaces(let spaces): parameter["translateTabsToSpaces"] = spaces
             case .trimTrailingWhiteSpaces(let isTrim): parameter["trimTrailingWhiteSpaces"] = isTrim
             case .unifyLeadingHyphen(let isUnify): parameter["unifyLeadingHyphen"] = isUnify
+            }
+        }
+    }
+    
+    /// 日文的處理策略
+    /// - Parameters:
+    ///   - strategies: [JapaneseConversionStrategy]?
+    ///   - parameter: inout [String: Any]
+    func parseConversionStrategies(_ strategies: [JapaneseConversionStrategy]?, parameter: inout [String: Any]) {
+        
+        guard let strategies = strategies else { return }
+        
+        strategies.forEach { strategy in
+            
+            switch strategy {
+            case .style(let style): parameter["jpStyleConversionStrategy"] = style.rawValue
+            case .text(let text): parameter["jpTextConversionStrategy"] = text.rawValue
             }
         }
     }
