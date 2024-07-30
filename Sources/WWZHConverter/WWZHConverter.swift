@@ -22,16 +22,56 @@ extension WWZHConverter {
     /// [轉換的類型](https://docs.zhconvert.org/api/convert/)
     public enum ConverterType {
         
-        case Simplified             // 簡體化
-        case Traditional            // 繁體化
-        case China                  // 中國化
-        case Hongkong               // 香港化
-        case Taiwan                 // 台灣化
-        case Pinyin                 // 拼音化
-        case Bopomofo               // 注音化
-        case Mars                   // 火星文化
-        case WikiSimplified         // 維基簡體化
-        case WikiTraditional        // 維基繁體化
+        case Simplified                                             // 簡體化
+        case Traditional                                            // 繁體化
+        case China                                                  // 中國化
+        case Hongkong                                               // 香港化
+        case Taiwan                                                 // 台灣化
+        case Pinyin                                                 // 拼音化
+        case Bopomofo                                               // 注音化
+        case Mars                                                   // 火星文化
+        case WikiSimplified                                         // 維基簡體化
+        case WikiTraditional                                        // 維基繁體化
+    }
+    
+    /// 輸出模板
+    public enum TemplateType: String {
+        
+        case Inline
+        case SideBySide
+        case Unified
+        case Context
+        case JsonHtml
+        case JsonText
+    }
+    
+    /// 自定義錯誤
+    public enum ConvertError: Error {
+        
+        case httpCode(_ code: Int)                                  // HTTP狀態碼
+        case jsonObject                                             // JSON轉換錯誤
+        case unknown                                                // 未知錯誤
+    }
+    
+    /// 差異比較
+    public enum DifferentType {
+        
+        case diffCharLevel(_ isEnable: Bool)                        // 是否使用字元級別的差異比較
+        case diffContextLines(_ lines: Int)                         // 所輸出的結果要包含多少行上下文 (0 ~ 4)
+        case diffEnable(_ isEnable: Bool)                           // 是否要啟用差異比較
+        case diffIgnoreCase(_ isEnable: Bool)                       // 是否要忽略英文大小寫的差異
+        case diffIgnoreWhiteSpaces(_ isIgnore: Bool)                // 是否要忽略空格的差異
+        case diffTemplate(_ template: TemplateType)                 // 所要使用的輸出模板
+    }
+    
+    /// 文本整理
+    public enum TextType {
+        
+        case cleanUpText(_ isCleanUp: Bool)                         // 根據所偵測到的文本格式做出對應的文本清理
+        case ensureNewlineAtEof(_ isEnsure: Bool)                   // 確保輸出的文本結尾處有一個且只有一個換行符
+        case translateTabsToSpaces(_ spaces: Int)                   // 轉換每行開頭的 Tab 為數個空格 (-1 ~ 8)
+        case trimTrailingWhiteSpaces(_ isTrim: Bool)                // 移除每行結尾的多餘空格
+        case unifyLeadingHyphen(_ isUnify: Bool)                    // 將區分說話人用的連字號統一為半形減號
     }
     
     /// [自訂取代](https://filmora.wondershare.tw/animated-video/top-websites-to-download-anime-subtitles-for-free.html)
@@ -57,36 +97,6 @@ extension WWZHConverter {
             
             return paramater
         }
-    }
-    
-    /// 差異比較
-    public enum DifferentType {
-        
-        case diffCharLevel(_ isEnable: Bool)                        // 是否使用字元級別的差異比較
-        case diffContextLines(_ lines: Int)                         // 所輸出的結果要包含多少行上下文 (0 ~ 4)
-        case diffEnable(_ isEnable: Bool)                           // 是否要啟用差異比較
-        case diffIgnoreCase(_ isEnable: Bool)                       // 是否要忽略英文大小寫的差異
-        case diffIgnoreWhiteSpaces(_ isIgnore: Bool)                // 是否要忽略空格的差異
-        case diffTemplate(_ template: TemplateType)                 // 所要使用的輸出模板
-    }
-    
-    /// 輸出模板
-    public enum TemplateType: String {
-        
-        case Inline
-        case SideBySide
-        case Unified
-        case Context
-        case JsonHtml
-        case JsonText
-    }
-    
-    /// 自定義錯誤
-    public enum ConvertError: Error {
-        
-        case httpCode(_ code: Int)  // HTTP狀態碼
-        case jsonObject             // JSON轉換錯誤
-        case unknown                // 未知錯誤
     }
 }
 
@@ -114,10 +124,11 @@ public extension WWZHConverter {
     ///   - converterType: Constant.ConverterType
     ///   - replaces: [ReplaceType]?
     ///   - differents: [DifferentType]?
+    ///   - texts: [TextType]?
     ///   - result: (Result<String, Error>) -> Void
-    func convertText(_ text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, result: @escaping (Result<String, Error>) -> Void) {
+    func convertText(_ text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, result: @escaping (Result<String, Error>) -> Void) {
         
-        convert(text: text, to: converterType, replaces: replaces, differents: differents) { convertResult in
+        convert(text: text, to: converterType, replaces: replaces, differents: differents, texts: texts) { convertResult in
             
             switch convertResult {
             case .failure(let error): result(.failure(error))
@@ -141,8 +152,9 @@ public extension WWZHConverter {
     ///   - converterType: 要轉換成什麼語言類型
     ///   - replaces: 自訂取代文字
     ///   - differents: 文字差異比較
+    ///   - texts: 文本整理
     ///   - result: (Result<Data?, Error>) -> Void
-    func convert(text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, result: @escaping (Result<Data?, Error>) -> Void) {
+    func convert(text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, result: @escaping (Result<Data?, Error>) -> Void) {
         
         var parameter: [String: Any] = [
             "text": text,
@@ -151,6 +163,7 @@ public extension WWZHConverter {
         
         parseReplaceTypes(replaces, parameter: &parameter)
         parseDifferentTypes(differents, parameter: &parameter)
+        parseTextTypes(texts, parameter: &parameter)
         
         _ = WWNetworking.shared.request(httpMethod: .POST, urlString: Constant.API.convert.url(), httpBodyType: .dictionary(parameter)) { [weak self] httpResult in
             
@@ -223,6 +236,26 @@ private extension WWZHConverter {
             case .diffIgnoreCase(let isIgnore): parameter["diffIgnoreCase"] = isIgnore
             case .diffIgnoreWhiteSpaces(let isEnable): parameter["diffIgnoreWhiteSpaces"] = isEnable
             case .diffTemplate(let template): parameter["diffTemplate"] = template.rawValue
+            }
+        }
+    }
+    
+    /// 解析文本整理
+    /// - Parameters:
+    ///   - texts: [TextType]?
+    ///   - parameter: inout [String: Any]
+    func parseTextTypes(_ texts: [TextType]?, parameter: inout [String: Any]) {
+        
+        guard let texts = texts else { return }
+        
+        texts.forEach { text in
+            
+            switch text {
+            case .cleanUpText(let isCleanUp): parameter["cleanUpText"] = isCleanUp
+            case .ensureNewlineAtEof(let isEnsure): parameter["ensureNewlineAtEof"] = isEnsure
+            case .translateTabsToSpaces(let spaces): parameter["translateTabsToSpaces"] = spaces
+            case .trimTrailingWhiteSpaces(let isTrim): parameter["trimTrailingWhiteSpaces"] = isTrim
+            case .unifyLeadingHyphen(let isUnify): parameter["unifyLeadingHyphen"] = isUnify
             }
         }
     }
