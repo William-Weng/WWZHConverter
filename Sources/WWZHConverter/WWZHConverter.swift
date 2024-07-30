@@ -69,6 +69,12 @@ extension WWZHConverter {
         case unknown                                                // 未知錯誤
     }
     
+    /// 字幕樣式
+    public enum TextStyleType {
+        case ignore(_ textStyles: String)                           // 由那些不希望被繁化姬處理的 "樣式" 以逗號分隔所組成的字串
+        case japanese(_ textStyles: String)                         // 告訴繁化姬哪些樣式要當作日文處理
+    }
+    
     /// 差異比較
     public enum DifferentType {
         
@@ -142,10 +148,11 @@ public extension WWZHConverter {
     ///   - differents: [DifferentType]?
     ///   - texts: [TextType]?
     ///   - strategies: [JapaneseConversionStrategy]?
+    ///   - textStyles: [TextStyleType]?
     ///   - result: (Result<String, Error>) -> Void
-    func convertText(_ text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, strategies: [JapaneseConversionStrategy]? = nil, result: @escaping (Result<String, Error>) -> Void) {
+    func convertText(_ text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, strategies: [JapaneseConversionStrategy]? = nil, textStyles: [TextStyleType]? = nil, result: @escaping (Result<String, Error>) -> Void) {
         
-        convert(text: text, to: converterType, replaces: replaces, differents: differents, texts: texts, strategies: strategies) { convertResult in
+        convert(text: text, to: converterType, replaces: replaces, differents: differents, texts: texts, strategies: strategies, textStyles: textStyles) { convertResult in
             
             switch convertResult {
             case .failure(let error): result(.failure(error))
@@ -171,8 +178,9 @@ public extension WWZHConverter {
     ///   - differents: 文字差異比較
     ///   - texts: 文本整理
     ///   - strategies: 日文的處理策略
+    ///   - textStyles: 字幕樣式
     ///   - result: (Result<Data?, Error>) -> Void
-    func convert(text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, strategies: [JapaneseConversionStrategy]? = nil, result: @escaping (Result<Data?, Error>) -> Void) {
+    func convert(text: String, to converterType: ConverterType, replaces: [ReplaceType]? = nil, differents: [DifferentType]? = nil, texts: [TextType]? = nil, strategies: [JapaneseConversionStrategy]? = nil, textStyles: [TextStyleType]? = nil, result: @escaping (Result<Data?, Error>) -> Void) {
         
         var parameter: [String: Any] = [
             "text": text,
@@ -183,6 +191,7 @@ public extension WWZHConverter {
         parseDifferentTypes(differents, parameter: &parameter)
         parseTextTypes(texts, parameter: &parameter)
         parseConversionStrategies(strategies, parameter: &parameter)
+        parseTextStyleTypes(textStyles, parameter: &parameter)
         
         _ = WWNetworking.shared.request(httpMethod: .POST, urlString: Constant.API.convert.url(), httpBodyType: .dictionary(parameter)) { [weak self] httpResult in
             
@@ -292,6 +301,23 @@ private extension WWZHConverter {
             switch strategy {
             case .style(let style): parameter["jpStyleConversionStrategy"] = style.rawValue
             case .text(let text): parameter["jpTextConversionStrategy"] = text.rawValue
+            }
+        }
+    }
+    
+    /// 處理字幕樣式
+    /// - Parameters:
+    ///   - textStyleTypes: [TextStyleType]?
+    ///   - parameter: inout [String: Any]
+    func parseTextStyleTypes(_ textStyleTypes: [TextStyleType]?, parameter: inout [String: Any]) {
+        
+        guard let textStyleTypes = textStyleTypes else { return }
+        
+        textStyleTypes.forEach { type in
+            
+            switch type {
+            case .ignore(let textStyle): parameter["ignoreTextStyles"] = textStyle
+            case .japanese(let textStyle): parameter["jpTextStyles"] = textStyle
             }
         }
     }

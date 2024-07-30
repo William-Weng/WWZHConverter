@@ -11,7 +11,7 @@
 ## [Installation with Swift Package Manager](https://medium.com/彼得潘的-swift-ios-app-開發問題解答集/使用-spm-安裝第三方套件-xcode-11-新功能-2c4ffcf85b4b)
 ```bash
 dependencies: [
-    .package(url: "https://github.com/William-Weng/WWZHConverter.git", .upToNextMajor(from: "1.1.3"))
+    .package(url: "https://github.com/William-Weng/WWZHConverter.git", .upToNextMajor(from: "1.1.4"))
 ]
 ```
 
@@ -19,8 +19,8 @@ dependencies: [
 |函式|說明|
 |-|-|
 |serviceInfo(result:)|取得API的相關資訊|
-|convertText(_:to:replaces:differents:texts:strategies:result:)|文字轉換 (文字部分)|
-|convert(text:to:replaces:differents:texts:strategies:result:)|文字轉換 (完整資訊)|
+|convertText(_:to:replaces:differents:texts:strategies:textStyles:result:)|文字轉換 (文字部分)|
+|convert(text:to:replaces:differents:texts:strategies:textStyles:result:)|文字轉換 (完整資訊)|
 
 ## Example
 ```swift
