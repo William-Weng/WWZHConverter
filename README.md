@@ -27,7 +27,6 @@ dependencies: [
 import UIKit
 import WWZHConverter
 
-// MARK: - ViewController
 final class ViewController: UIViewController {
 
     @IBOutlet weak var twLabel: UILabel!
@@ -37,16 +36,19 @@ final class ViewController: UIViewController {
     @IBAction func convertToChain(_ sender: UIBarButtonItem) {
         
         convert(text: twLabel.text, type: .China) { text in
-            DispatchQueue.main.async { self.cnLabel.text = text }
+            Task { await MainActor.run { self.cnLabel.text = text }}
         }
     }
     
     @IBAction func convertToHK(_ sender: UIBarButtonItem) {
         
         convert(text: twLabel.text, type: .Hongkong) { text in
-            DispatchQueue.main.async { self.hkLabel.text = text }
+            Task { await MainActor.run { self.hkLabel.text = text }}
         }
     }
+}
+
+private extension ViewController {
     
     func convert(text: String?, type: WWZHConverter.ConverterType, message: @escaping (String) -> Void) {
         
