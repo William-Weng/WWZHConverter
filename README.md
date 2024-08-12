@@ -3,8 +3,8 @@
 [![Swift-5.6](https://img.shields.io/badge/Swift-5.6-orange.svg?style=flat)](https://developer.apple.com/swift/) [![iOS-14.0](https://img.shields.io/badge/iOS-14.0-pink.svg?style=flat)](https://developer.apple.com/swift/) ![](https://img.shields.io/github/v/tag/William-Weng/WWZHConverter) [![Swift Package Manager-SUCCESS](https://img.shields.io/badge/Swift_Package_Manager-SUCCESS-blue.svg?style=flat)](https://developer.apple.com/swift/) [![LICENSE](https://img.shields.io/badge/LICENSE-MIT-yellow.svg?style=flat)](https://developer.apple.com/swift/)
 
 ## [Introduction - 簡介](https://swiftpackageindex.com/William-Weng)
-- [Convert the words and phrases between the two sides of the Taiwan Strait and the three places into each other.](https://zhconvert.org/)
-- [轉換兩岸三地之間的用語。](https://docs.zhconvert.org/)
+- [Convert the words and phrases between the two sides of the Taiwan Strait and the three places into each other (Use ZHConverter).](https://zhconvert.org/)
+- [轉換兩岸三地之間的用語 (使用「繁化姬」API)。](https://docs.zhconvert.org/)
 
 ![WWZHConverter](./Example.gif)
 
